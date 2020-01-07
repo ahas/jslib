@@ -82,4 +82,10 @@ class HeatMe {
         this._ctx.globalCompositeOperation = mode;
         this.renderAll();
     }
+
+    resize(width, height) {
+        canvas.width = this.width = width;
+        canvas.height = this.height = height;
+        this.renderAll();
+    }
 }
