@@ -21,11 +21,17 @@ window.onload = function () {
     
     canvas.onmousedown = canvas.ontouchstart = function (e) {
         isMouseDown = true;
-        heatme.addValue(value, e.layerX, e.layerY);
+        if (e.touches) {
+            heatme.addValue(value, e.touches[0].pageX, e.touches[0].pageY);
+        } else {
+            heatme.addValue(value, e.layerX, e.layerY);
+        }
     };
 
     canvas.onmousemove = canvas.ontouchmove =  function (e) {
-        if (isMouseDown) {
+        if (e.touches) {
+            heatme.addValue(value, e.touches[0].pageX, e.touches[0].pageY);
+        } else {
             heatme.addValue(value, e.layerX, e.layerY);
         }
     };
