@@ -4,7 +4,7 @@ window.onload = function () {
     const canvas = document.getElementById('canvas');
     let isMouseDown = false;
     let value = 10;
-    canvas.width = canvas.height = 500;
+    canvas.width = canvas.height = 1000;
     const heatme = new HeatMe(canvas);
     heatme.min = 0;
     heatme.max = 50;
@@ -18,18 +18,18 @@ window.onload = function () {
         heatme.setBlending(e.target.value);
     }
     
-    canvas.onmousedown = function (e) {
+    canvas.onmousedown = canvas.touchstart = function (e) {
         isMouseDown = true;
         heatme.addValue(value, e.layerX, e.layerY);
     };
 
-    canvas.onmousemove = function (e) {
+    canvas.onmousemove = canvas.touchmove =  function (e) {
         if (isMouseDown) {
             heatme.addValue(value, e.layerX, e.layerY);
         }
     };
 
-    canvas.onmouseup = function (e) {
+    canvas.onmouseup = canvas.touchend =  function (e) {
         isMouseDown = false;
     };
 
