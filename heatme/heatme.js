@@ -11,8 +11,8 @@ class HeatMe {
         this._data = [];
         this._ctx = canvas.getContext('2d');
         this._palette = this._getColorPalette();
-        this._alphaStamp = document.createElement('canvas');
-        this._alphaCtx =  this._alphaStamp.getContext('2d');
+        this._alphaStamps = {};
+        this._alphaGradients = {};
     }
 
     addValue(value, x, y, radius, colorize) {
@@ -25,17 +25,27 @@ class HeatMe {
         }
     }
 
+    _getAlphaGradient(radius) {
+        if (!this._alphaGradients[radius]) {
+            this._alphaGradients[radius] = this._ctx.createRadialGradient(radius, radius, radius * (1 - this.blur), radius, radius, radius);
+        }
+        return this._alphaGradients[radius];
+    }
+
     _getAlphaStamp(radius) {
-        const blur = 1 - this.blur;
-        const x = radius;
-        const y = radius;
-        const gradient = this._ctx.createRadialGradient(x, y, radius * blur, x, y, radius);
-        this._alphaStamp.width = this._alphaStamp.height = radius * 2;
-        gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
-        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        this._alphaCtx.fillStyle = gradient;
-        this._alphaCtx.fillRect(0, 0, 2 * radius, 2 * radius);
-        return this._alphaStamp;
+        if (!this._alphaStamps[radius]) {
+            const alphaCanvas = document.createElement('canvas');
+            const alphaCtx =  alphaCanvas.getContext('2d');
+            const gradient = this._getAlphaGradient(radius);
+            alphaCtx.clearRect(0, 0, alphaCanvas.width, alphaCanvas.height);
+            alphaCanvas.width = alphaCanvas.height = radius * 2;
+            gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            alphaCtx.fillStyle = gradient;
+            alphaCtx.fillRect(0, 0, 2 * radius, 2 * radius);
+            this._alphaStamps[radius] = alphaCanvas;
+        }
+        return this._alphaStamps[radius];
     }
 
     _drawAlpha(value, x, y, radius) {

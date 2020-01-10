@@ -23,7 +23,7 @@ Vue.component('heatme-test', {
     mounted() {
         const canvas = this.$refs.canvas;
         const heatme = new HeatMe(canvas);
-        heatme.resize(canvas.clientWidth, canvas.clientHeight - 100);
+        heatme.resize(canvas.clientWidth, document.body.clientHeight - 100);
         heatme.min = 0;
         heatme.max = 50;
         
@@ -43,7 +43,7 @@ Vue.component('heatme-test', {
         };
     
         window.addEventListener('resize', () => {
-            heatme.resize(canvas.clientWidth, canvas.clientHeight - 100);
+            heatme.resize(canvas.clientWidth, document.body.clientHeight - 100);
         });
     }
 });

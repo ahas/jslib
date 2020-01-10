@@ -5,7 +5,7 @@ Vue.component('plasme-test', {
     mounted() {
         const canvas = this.$refs.canvas;
         const heatme = new HeatMe(canvas);
-        heatme.resize(canvas.clientWidth, canvas.clientHeight - 100);
+        heatme.resize(canvas.clientWidth, document.body.clientHeight - 100);
         heatme.max = 1;
         const radius = heatme.radius = 50;
         const points = [];
