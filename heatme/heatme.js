@@ -59,6 +59,8 @@ class HeatMe {
     }
 
     _colorize(x, y, width, height) {
+        width = Math.max(width, 1);
+        height = Math.max(height, 1);
         const img = this._ctx.getImageData(x, y, width, height);
         const pixels = img.data;
         for (let cx = 0; cx < width; cx++) {
