@@ -12,8 +12,8 @@ Vue.component('plasme-test', {
         const xspace = radius * 2;
         const yspace = xspace;
         let direction = 1;
-        for (let x = 0; x < canvas.width; x += xspace) {
-            for (let y = 0; y < canvas.height; y += yspace) {
+        for (let x = radius; x < canvas.width; x += xspace) {
+            for (let y = radius; y < canvas.height; y += yspace) {
                 points.push({
                     value: heatme.max * 0.8,
                     x,
