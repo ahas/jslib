@@ -1,43 +1,47 @@
 class HeatMe {
     constructor(canvas) {
+        this.canvas = canvas;
         this.width = canvas.width;
         this.height = canvas.height;
         this.radius = 50;
         this.blur = 0.5;
         this.min = 0;
         this.max = 1;
-        this.gradient = { 0.75: 'rgb(0,0,255)', 0.45: 'rgb(0,255,0)', 0.15: 'yellow', 0: 'rgb(255,0,0)' };
+        this.gradient = { 0.75: 'rgb(0, 0, 255)', 0.45: 'rgb(0, 255, 0)', 0.15: 'yellow', 0: 'rgb(255, 0, 0)' };
         this._data = [];
         this._ctx = canvas.getContext('2d');
         this._palette = this._getColorPalette();
-        this._alphaStamp = this._getAlphaStamp();
+        this._alphaStamp = document.createElement('canvas');
+        this._alphaCtx =  this._alphaStamp.getContext('2d');
     }
 
-    addValue(value, x, y) {
+    addValue(value, x, y, radius, colorize) {
+        radius = radius || this.radius;
+        colorize = colorize == undefined ? true : colorize;
         this._data.push({ value, x, y });
-        this._drawAlpha(value, x, y);
-        this._colorize(x - this.radius, y - this.radius, this.radius * 2, this.radius * 2);
+        this._drawAlpha(value, x, y, radius);
+        if (colorize) {
+            this._colorize(x - radius, y - radius, radius * 2, radius * 2);
+        }
     }
 
-    _getAlphaStamp() {
+    _getAlphaStamp(radius) {
         const blur = 1 - this.blur;
-        const radius = this.radius;
         const x = radius;
-        const y = radius;        
-        const alphaStamp = document.createElement('canvas');
-        const alphaCtx = alphaStamp.getContext('2d');
+        const y = radius;
         const gradient = this._ctx.createRadialGradient(x, y, radius * blur, x, y, radius);
-        alphaStamp.width = alphaStamp.height = radius * 2;
+        this._alphaStamp.width = this._alphaStamp.height = radius * 2;
         gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
         gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        alphaCtx.fillStyle = gradient;
-        alphaCtx.fillRect(0, 0, 2 * radius, 2 * radius);
-        return alphaStamp;
+        this._alphaCtx.fillStyle = gradient;
+        this._alphaCtx.fillRect(0, 0, 2 * radius, 2 * radius);
+        return this._alphaStamp;
     }
 
-    _drawAlpha(value, x, y) {
+    _drawAlpha(value, x, y, radius) {
+        radius = Math.max(radius, 1);
         this._ctx.globalAlpha = Math.max((value - this.min) / (this.max - this.min), 0.01);
-        this._ctx.drawImage(this._alphaStamp, x - this.radius, y - this.radius);
+        this._ctx.drawImage(this._getAlphaStamp(radius), x - radius, y - radius);
     }
 
     _getColorPalette() {
@@ -70,6 +74,15 @@ class HeatMe {
         this._ctx.putImageData(img, x, y);
     }
 
+    colorize() {
+        this._colorize(0, 0, this.width, this.height);
+    }
+
+    clear() {
+        this._ctx.clearRect(0, 0, this.width, this.height);
+        this._data = [];
+    }
+
     renderAll() {
         this._ctx.clearRect(0, 0, this.width, this.height);
         for (const d of this._data) {
@@ -84,8 +97,8 @@ class HeatMe {
     }
 
     resize(width, height) {
-        canvas.width = this.width = width;
-        canvas.height = this.height = height;
+        this.canvas.width = this.width = width;
+        this.canvas.height = this.height = height;
         this.renderAll();
     }
 }
